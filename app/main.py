@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 from .database import engine, Base
 from .models.all import User, Wallet, Category, Transaction, Budget, FinancialGoal, Notification
 from .routes import auth, wallets, transactions, categories, budgets
@@ -16,10 +17,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

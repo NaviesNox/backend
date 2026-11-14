@@ -14,7 +14,12 @@ if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
 else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    # Supabase PostgreSQL requires TLS for external connections.
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        connect_args={"sslmode": "require"},
+        pool_pre_ping=True,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
